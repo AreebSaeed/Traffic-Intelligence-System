@@ -1,0 +1,37 @@
+# Large datasets (regenerate with scripts/download_roads.py)
+data/raw/*.geojson
+data/processed/*.geojson
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# OSMnx / download caches
+cache/
+scripts/cache/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+
+# IDE
+.idea/
+.vscode/
+# Large GIS datasets
+data/processed/*.geojson
+data/raw/*.geojson
+
+# Jupyter
+.ipynb_checkpoints/
+
+data/raw/*.geojson
+data/processed/*.geojson
+.ipynb_checkpoints/
+cache/
+scripts/cache/
+__pycache__/
+*.pyc
