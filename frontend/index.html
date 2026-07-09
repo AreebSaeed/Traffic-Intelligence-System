@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | Karachi Traffic Intelligence</title>
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/map.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <a class="brand" href="index.html">
+      <img src="assets/logo.png" alt="KTIS logo" />
+      <span>Karachi <em>Traffic Intelligence</em></span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="active">Dashboard</a>
+      <a href="prediction.html">Predict</a>
+      <a href="roads.html">Traffic Map</a>
+      <a href="about.html">About</a>
+    </div>
+  </nav>
+
+  <main class="page">
+    <h1 class="page-title">Live Traffic Dashboard</h1>
+    <p class="page-subtitle">Real-time predictions for Karachi's road network, powered by XGBoost.</p>
+
+    <!-- Statistics cards -->
+    <section class="stats-row">
+      <div class="stat-card">
+        <span class="stat-label">Total Roads</span>
+        <span class="stat-value" id="stat-roads">&mdash;</span>
+        <span class="stat-sub">OpenStreetMap segments</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Weather</span>
+        <span class="stat-value" id="stat-weather">&mdash;</span>
+        <span class="stat-sub">Current temperature</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Predictions Today</span>
+        <span class="stat-value" id="stat-predictions">&mdash;</span>
+        <span class="stat-sub">Stored in Supabase</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Average Speed</span>
+        <span class="stat-value" id="stat-speed">&mdash;</span>
+        <span class="stat-sub">Posted limits (roads with data)</span>
+      </div>
+    </section>
+
+    <div class="dashboard-grid">
+      <!-- Karachi map -->
+      <section class="panel map-panel">
+        <div class="map-header">
+          <h3 style="margin:0">Karachi Map <span class="muted">roads colored by prediction</span></h3>
+          <form id="map-search-form">
+            <input type="text" id="map-search-input" placeholder="Search road, e.g. Shahrah-e-Faisal" />
+            <button class="btn" type="submit">Search</button>
+          </form>
+        </div>
+        <div id="dashboard-map"></div>
+      </section>
+
+      <!-- Side column -->
+      <div class="side-column">
+        <!-- Weather panel -->
+        <section class="panel">
+          <h3>Weather <span class="muted">Karachi, live</span></h3>
+          <div class="weather-grid">
+            <div class="weather-item">
+              <div class="w-label">Temperature</div>
+              <div class="w-value" id="weather-temp">&mdash;</div>
+            </div>
+            <div class="weather-item">
+              <div class="w-label">Humidity</div>
+              <div class="w-value" id="weather-humidity">&mdash;</div>
+            </div>
+            <div class="weather-item">
+              <div class="w-label">Rain</div>
+              <div class="w-value" id="weather-rain">&mdash;</div>
+            </div>
+            <div class="weather-item">
+              <div class="w-label">Wind Speed</div>
+              <div class="w-value" id="weather-wind">&mdash;</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Traffic summary -->
+        <section class="panel">
+          <h3>Traffic Summary <span class="muted">recent predictions</span></h3>
+          <div class="summary-flex">
+            <canvas id="traffic-donut" width="140" height="140"></canvas>
+            <div class="summary-legend legend-list" id="traffic-legend"></div>
+          </div>
+        </section>
+
+        <!-- Quick prediction panel -->
+        <section class="panel">
+          <h3>Prediction Panel <span class="muted">search &amp; predict</span></h3>
+          <form id="quick-search-form" style="display:flex;gap:8px">
+            <input type="text" id="quick-search-input" placeholder="Road name..." />
+            <button class="btn" type="submit">Find</button>
+          </form>
+          <div class="search-results" id="quick-search-results"></div>
+          <div class="predict-result" id="quick-predict-result"></div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">Karachi Traffic Intelligence System &middot; FastAPI + Supabase + XGBoost</footer>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

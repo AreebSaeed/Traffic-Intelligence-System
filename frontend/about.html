@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About | Karachi Traffic Intelligence</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .about-grid .full { grid-column: 1 / -1; }
+    .about-list { list-style: none; }
+    .about-list li {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--panel-border);
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      font-size: 0.93rem;
+    }
+    .about-list li:last-child { border-bottom: none; }
+    .about-list .k { color: var(--text-dim); }
+    .pipeline-steps { line-height: 1.9; font-size: 0.93rem; color: var(--text-dim); }
+    .pipeline-steps strong { color: var(--text); }
+    @media (max-width: 860px) { .about-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a class="brand" href="index.html">
+      <img src="assets/logo.png" alt="KTIS logo" />
+      <span>Karachi <em>Traffic Intelligence</em></span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Dashboard</a>
+      <a href="prediction.html">Predict</a>
+      <a href="roads.html">Traffic Map</a>
+      <a href="about.html" class="active">About</a>
+    </div>
+  </nav>
+
+  <main class="page">
+    <h1 class="page-title">About the Project</h1>
+    <p class="page-subtitle">Karachi Traffic Intelligence System (KTIS)</p>
+
+    <div class="about-grid">
+      <section class="panel full">
+        <h3>Project</h3>
+        <p class="muted" style="line-height:1.7">
+          KTIS is an end-to-end traffic prediction platform for Karachi, Pakistan.
+          It combines the OpenStreetMap road network, live weather, public holidays,
+          school and office timings, and city events to predict traffic levels
+          (Low / Medium / High) for any road in the city. Predictions are served
+          through a FastAPI backend, stored in Supabase (PostgreSQL + PostGIS),
+          and visualized on an interactive Leaflet map.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h3>Dataset</h3>
+        <ul class="about-list">
+          <li><span class="k">Road segments</span><span>500,268 (OSMnx / OpenStreetMap)</span></li>
+          <li><span class="k">Weather source</span><span>Open-Meteo hourly API</span></li>
+          <li><span class="k">Context data</span><span>Holidays, schools, offices, events</span></li>
+          <li><span class="k">Training rows</span><span>840,000 (5,000 roads &times; 168 hours)</span></li>
+          <li><span class="k">Features</span><span>21 (road, weather, time, context)</span></li>
+          <li><span class="k">Storage</span><span>Supabase &middot; PostgreSQL + PostGIS</span></li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h3>Model</h3>
+        <ul class="about-list">
+          <li><span class="k">Algorithm</span><span>XGBoost Classifier</span></li>
+          <li><span class="k">Problem type</span><span>Multi-class (Low / Medium / High)</span></li>
+          <li><span class="k">Estimators</span><span>200 trees, depth 8</span></li>
+          <li><span class="k">Accuracy</span><span><strong>79.3%</strong> on 168,000 test rows</span></li>
+          <li><span class="k">Explainability</span><span>SHAP feature analysis</span></li>
+          <li><span class="k">Scheduler</span><span>Bulk predictions every 15 minutes</span></li>
+        </ul>
+      </section>
+
+      <section class="panel full">
+        <h3>Pipeline</h3>
+        <p class="pipeline-steps">
+          <strong>1. Ingest</strong> &mdash; OSMnx road download, Open-Meteo weather, external CSVs uploaded to Supabase &nbsp;&rarr;&nbsp;
+          <strong>2. Feature engineering</strong> &mdash; time features, holiday/school/office/event flags &nbsp;&rarr;&nbsp;
+          <strong>3. Training</strong> &mdash; label generation, encoding, train/test split, XGBoost &nbsp;&rarr;&nbsp;
+          <strong>4. Serving</strong> &mdash; FastAPI endpoints with live feature building &nbsp;&rarr;&nbsp;
+          <strong>5. Frontend</strong> &mdash; dashboard, prediction form, Leaflet traffic map.
+        </p>
+      </section>
+
+      <section class="panel full">
+        <h3>Developers</h3>
+        <p class="muted" style="line-height:1.7">
+          Built as a portfolio project demonstrating full-stack ML engineering:
+          geospatial data processing, feature engineering, model training and
+          explainability, REST API design, scheduled inference, and interactive
+          mapping. Stack: Python, pandas, GeoPandas, OSMnx, XGBoost, scikit-learn,
+          SHAP, FastAPI, APScheduler, Supabase (PostgreSQL/PostGIS), Leaflet.js.
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">Karachi Traffic Intelligence System &middot; FastAPI + Supabase + XGBoost</footer>
+</body>
+</html>

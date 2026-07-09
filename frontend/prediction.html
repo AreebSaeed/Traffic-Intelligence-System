@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Predict | Karachi Traffic Intelligence</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .predict-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .form-grid .full { grid-column: 1 / -1; }
+    .result-panel {
+      text-align: center;
+      padding: 40px 24px;
+    }
+    .result-emoji { font-size: 4rem; line-height: 1; margin-bottom: 12px; }
+    .result-label { font-size: 1.5rem; font-weight: 700; margin-bottom: 16px; }
+    .result-label.low { color: var(--low); }
+    .result-label.medium { color: var(--medium); }
+    .result-label.high { color: var(--high); }
+    .confidence-track {
+      height: 10px;
+      background: var(--bg-soft);
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 0 auto 10px;
+      max-width: 320px;
+    }
+    .confidence-fill { height: 100%; border-radius: 999px; }
+    .confidence-fill.low { background: var(--low); }
+    .confidence-fill.medium { background: var(--medium); }
+    .confidence-fill.high { background: var(--high); }
+    .predict-result { display: none; }
+    .predict-result.visible { display: block; }
+    @media (max-width: 900px) {
+      .predict-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a class="brand" href="index.html">
+      <img src="assets/logo.png" alt="KTIS logo" />
+      <span>Karachi <em>Traffic Intelligence</em></span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Dashboard</a>
+      <a href="prediction.html" class="active">Predict</a>
+      <a href="roads.html">Traffic Map</a>
+      <a href="about.html">About</a>
+    </div>
+  </nav>
+
+  <main class="page">
+    <h1 class="page-title">Traffic Prediction</h1>
+    <p class="page-subtitle">Enter road and weather conditions to predict the traffic level.</p>
+
+    <div class="predict-grid">
+      <section class="panel">
+        <h3>Input Features</h3>
+        <form id="prediction-form" class="form-grid">
+          <div>
+            <label for="input-road-type">Road Type</label>
+            <select id="input-road-type">
+              <option value="residential">Residential</option>
+              <option value="primary">Primary</option>
+              <option value="secondary">Secondary</option>
+              <option value="tertiary">Tertiary</option>
+              <option value="trunk">Trunk</option>
+              <option value="motorway">Motorway</option>
+              <option value="unclassified">Unclassified</option>
+              <option value="living_street">Living Street</option>
+            </select>
+          </div>
+          <div>
+            <label for="input-length">Length (meters)</label>
+            <input type="number" id="input-length" value="250" min="1" step="any" />
+          </div>
+          <div>
+            <label for="input-lanes">Lanes</label>
+            <input type="number" id="input-lanes" value="2" min="1" max="10" />
+          </div>
+          <div>
+            <label for="input-speed">Speed Limit (km/h)</label>
+            <input type="number" id="input-speed" value="60" min="5" max="140" />
+          </div>
+          <div>
+            <label for="input-temperature">Temperature (&deg;C)</label>
+            <input type="number" id="input-temperature" value="32" step="any" />
+          </div>
+          <div>
+            <label for="input-humidity">Humidity (%)</label>
+            <input type="number" id="input-humidity" value="65" min="0" max="100" />
+          </div>
+          <div>
+            <label for="input-rain">Rain (mm)</label>
+            <input type="number" id="input-rain" value="0" min="0" step="any" />
+          </div>
+          <div>
+            <label for="input-hour">Time (hour of day)</label>
+            <select id="input-hour"></select>
+          </div>
+          <div class="full">
+            <button class="btn" type="submit" style="width:100%">Predict</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel result-panel">
+        <h3>Result</h3>
+        <div class="predict-result" id="prediction-result"></div>
+        <p class="muted" id="result-placeholder">
+          Fill the form and press <strong>Predict</strong>.<br /><br />
+          &#x1F7E2; Low &nbsp;&nbsp; &#x1F7E1; Medium &nbsp;&nbsp; &#x1F534; High
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">Karachi Traffic Intelligence System &middot; FastAPI + Supabase + XGBoost</footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/prediction.js"></script>
+  <script>
+    // Populate hour dropdown and hide placeholder once a result shows.
+    const hourSelect = document.getElementById("input-hour");
+    for (let h = 0; h < 24; h++) {
+      const option = document.createElement("option");
+      option.value = h;
+      option.textContent = `${String(h).padStart(2, "0")}:00`;
+      if (h === new Date().getHours()) option.selected = true;
+      hourSelect.appendChild(option);
+    }
+    document.getElementById("prediction-form").addEventListener("submit", () => {
+      document.getElementById("result-placeholder").style.display = "none";
+    });
+  </script>
+</body>
+</html>

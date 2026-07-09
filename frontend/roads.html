@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Traffic Map | Karachi Traffic Intelligence</title>
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/map.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <a class="brand" href="index.html">
+      <img src="assets/logo.png" alt="KTIS logo" />
+      <span>Karachi <em>Traffic Intelligence</em></span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Dashboard</a>
+      <a href="prediction.html">Predict</a>
+      <a href="roads.html" class="active">Traffic Map</a>
+      <a href="about.html">About</a>
+    </div>
+  </nav>
+
+  <main class="page">
+    <h1 class="page-title">Karachi Traffic Map</h1>
+    <p class="page-subtitle">Roads colored by their latest traffic prediction. Click a road for details.</p>
+
+    <div class="map-page-grid">
+      <aside class="map-sidebar">
+        <section class="panel">
+          <h3>Search Road</h3>
+          <form id="road-search-form" style="display:flex;flex-direction:column;gap:10px">
+            <input type="text" id="road-search-input" placeholder="e.g. Shahrah-e-Faisal" />
+            <button class="btn" type="submit">Search &amp; Zoom</button>
+          </form>
+          <p class="muted" id="search-status" style="margin-top:10px;font-size:0.85rem"></p>
+        </section>
+
+        <section class="panel">
+          <h3>Legend</h3>
+          <div class="legend-list">
+            <div><span class="dot" style="background:#2ecc71"></span>&#x1F7E2; Low traffic</div>
+            <div><span class="dot" style="background:#f5b041"></span>&#x1F7E1; Medium traffic</div>
+            <div><span class="dot" style="background:#e74c3c"></span>&#x1F534; High traffic</div>
+            <div><span class="dot" style="background:#5d7290"></span>No prediction yet</div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h3>Loaded</h3>
+          <p class="muted" id="load-status">Loading roads...</p>
+        </section>
+      </aside>
+
+      <section>
+        <div id="full-map"></div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">Karachi Traffic Intelligence System &middot; FastAPI + Supabase + XGBoost</footer>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/map.js"></script>
+  <script>
+    const highlightRef = { layer: null };
+    const map = createMap("full-map", 12);
+
+    drawRoads(map, { limit: 1200 })
+      .then(({ roadCount, predictions }) => {
+        const predicted = Object.keys(predictions).length;
+        document.getElementById("load-status").innerHTML =
+          `${roadCount} road segments on map<br>${predicted} roads with predictions`;
+      })
+      .catch(() => {
+        document.getElementById("load-status").innerHTML =
+          "<span class='error-text'>Could not load roads. Is the API running on port 8000?</span>";
+      });
+
+    document.getElementById("road-search-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const query = document.getElementById("road-search-input").value.trim();
+      if (!query) return;
+
+      const status = document.getElementById("search-status");
+      status.textContent = "Searching...";
+      try {
+        const road = await searchAndZoom(map, query, highlightRef);
+        status.textContent = road ? `Found: ${road.name}` : "No road found.";
+      } catch {
+        status.textContent = "Search failed.";
+      }
+    });
+  </script>
+</body>
+</html>
