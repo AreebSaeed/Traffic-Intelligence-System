@@ -1,0 +1,43 @@
+{
+    "model_name": "Karachi Traffic Intelligence XGBoost",
+    "version": "1.0",
+    "problem_type": "Multi-class Classification",
+    "target": "traffic_level",
+    "classes": [
+        "High",
+        "Low",
+        "Medium"
+    ],
+    "number_of_features": 29,
+    "feature_columns": [
+        "road_id",
+        "road_type",
+        "length",
+        "lanes",
+        "maxspeed",
+        "temperature_x",
+        "humidity_x",
+        "rain_x",
+        "wind_speed_x",
+        "cloud_cover_x",
+        "hour",
+        "day",
+        "month",
+        "weekday",
+        "is_weekend",
+        "morning_peak",
+        "evening_peak",
+        "temperature_y",
+        "humidity_y",
+        "rain_y",
+        "wind_speed_y",
+        "cloud_cover_y",
+        "holiday_name",
+        "is_holiday",
+        "school_peak",
+        "office_peak",
+        "event_name",
+        "event_type",
+        "event"
+    ]
+}

@@ -20,6 +20,11 @@ model = joblib.load("ml/models/xgboost_model.pkl")
 
 X_train = pd.read_csv("ml/datasets/X_train.csv")
 
+SAMPLE_SIZE = 5000
+if len(X_train) > SAMPLE_SIZE:
+    X_train = X_train.sample(n=SAMPLE_SIZE, random_state=42)
+    print(f"Using {SAMPLE_SIZE:,} sampled rows for SHAP (faster analysis)")
+
 print(f"Training Samples: {len(X_train)}")
 print(f"Features: {X_train.shape[1]}")
 
