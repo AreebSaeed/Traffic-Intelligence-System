@@ -1,0 +1,6 @@
+id,sector,opening_time,closing_time
+1,Private,09:00:00,18:00:00
+2,Government,08:00:00,16:00:00
+3,Industrial,08:00:00,17:00:00
+4,Banks,09:00:00,17:00:00
+5,IT Companies,10:00:00,19:00:00

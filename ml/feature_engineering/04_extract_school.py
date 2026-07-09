@@ -1,24 +1,64 @@
 import pandas as pd
-from sqlalchemy import create_engine
+from config import engine
 
-from config import DATABASE_URL, INTERMEDIATE_DIR, PROJECT_ROOT, SCHOOL_OUTPUT
+print("=" * 60)
+print("Extracting School Timings from Supabase...")
+print("=" * 60)
 
+query = """
+SELECT
+    school_type,
+    opening_time,
+    closing_time
+FROM school_timings
+ORDER BY school_type;
+"""
 
-def extract_school() -> pd.DataFrame:
-    engine = create_engine(DATABASE_URL)
+schools = pd.read_sql(query, engine)
 
-    try:
-        school = pd.read_sql("SELECT * FROM school_timings", engine)
-    except Exception:
-        school = pd.read_csv(PROJECT_ROOT / "data" / "external" / "school_timings.csv")
+print("\nSchool timings loaded successfully.\n")
 
-    school["opening_time"] = pd.to_datetime(school["opening_time"], format="%H:%M:%S").dt.time
-    school["closing_time"] = pd.to_datetime(school["closing_time"], format="%H:%M:%S").dt.time
-    return school
+print("Dataset Shape:")
+print(schools.shape)
 
+print("\nFirst Five Rows:")
+print(schools.head())
 
-if __name__ == "__main__":
-    INTERMEDIATE_DIR.mkdir(parents=True, exist_ok=True)
-    school_df = extract_school()
-    school_df.to_csv(SCHOOL_OUTPUT, index=False)
-    print(f"Saved {len(school_df)} school timing records to {SCHOOL_OUTPUT}")
+print("\nColumn Names:")
+print(list(schools.columns))
+
+print("\nData Types:")
+print(schools.dtypes)
+
+print("\nMissing Values:")
+print(schools.isnull().sum())
+
+# Remove duplicates
+schools = schools.drop_duplicates()
+
+# Convert to time format
+schools["opening_time"] = pd.to_datetime(
+    schools["opening_time"].astype(str)
+).dt.time
+
+schools["closing_time"] = pd.to_datetime(
+    schools["closing_time"].astype(str)
+).dt.time
+
+print("\nNumber of School Types:")
+print(schools["school_type"].nunique())
+
+print("\nSchool Types:")
+print(schools["school_type"].unique())
+
+print("\nSaving school timings dataset...")
+
+schools.to_csv(
+    "ml/datasets/school_timings_raw.csv",
+    index=False
+)
+
+print("\nSchool timings dataset saved successfully!")
+
+print("\nSaved to:")
+print("ml/datasets/school_timings_raw.csv")

@@ -1,24 +1,64 @@
 import pandas as pd
-from sqlalchemy import create_engine
+from config import engine
 
-from config import DATABASE_URL, INTERMEDIATE_DIR, OFFICE_OUTPUT, PROJECT_ROOT
+print("=" * 60)
+print("Extracting Office Timings from Supabase...")
+print("=" * 60)
 
+query = """
+SELECT
+    sector,
+    opening_time,
+    closing_time
+FROM office_timings
+ORDER BY sector;
+"""
 
-def extract_office() -> pd.DataFrame:
-    engine = create_engine(DATABASE_URL)
+offices = pd.read_sql(query, engine)
 
-    try:
-        office = pd.read_sql("SELECT * FROM office_timings", engine)
-    except Exception:
-        office = pd.read_csv(PROJECT_ROOT / "data" / "external" / "office_timings.csv")
+print("\nOffice timings loaded successfully.\n")
 
-    office["opening_time"] = pd.to_datetime(office["opening_time"], format="%H:%M:%S").dt.time
-    office["closing_time"] = pd.to_datetime(office["closing_time"], format="%H:%M:%S").dt.time
-    return office
+print("Dataset Shape:")
+print(offices.shape)
 
+print("\nFirst Five Rows:")
+print(offices.head())
 
-if __name__ == "__main__":
-    INTERMEDIATE_DIR.mkdir(parents=True, exist_ok=True)
-    office_df = extract_office()
-    office_df.to_csv(OFFICE_OUTPUT, index=False)
-    print(f"Saved {len(office_df)} office timing records to {OFFICE_OUTPUT}")
+print("\nColumn Names:")
+print(list(offices.columns))
+
+print("\nData Types:")
+print(offices.dtypes)
+
+print("\nMissing Values:")
+print(offices.isnull().sum())
+
+# Remove duplicate rows
+offices = offices.drop_duplicates()
+
+# Convert to time format
+offices["opening_time"] = pd.to_datetime(
+    offices["opening_time"].astype(str)
+).dt.time
+
+offices["closing_time"] = pd.to_datetime(
+    offices["closing_time"].astype(str)
+).dt.time
+
+print("\nNumber of Office Sectors:")
+print(offices["sector"].nunique())
+
+print("\nOffice Sectors:")
+print(offices["sector"].unique())
+
+print("\nSaving office timings dataset...")
+
+offices.to_csv(
+    "ml/datasets/office_timings_raw.csv",
+    index=False
+)
+
+print("\nOffice timings dataset saved successfully!")
+
+print("\nSaved to:")
+print("ml/datasets/office_timings_raw.csv")

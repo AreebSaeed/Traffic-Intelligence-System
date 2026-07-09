@@ -1,38 +1,55 @@
-import geopandas as gpd
 import pandas as pd
+from config import engine
 
-from config import INTERMEDIATE_DIR, PROJECT_ROOT, ROADS_OUTPUT
+print("=" * 60)
+print("Extracting Road Data from Supabase...")
+print("=" * 60)
 
+query = """
+SELECT
+    road_osm_id,
+    road_name,
+    road_type,
+    length,
+    lanes,
+    maxspeed,
+    geometry
+FROM roads;
+"""
 
-def extract_roads() -> pd.DataFrame:
-    roads_path = PROJECT_ROOT / "data" / "processed" / "roads_clean.geojson"
-    if not roads_path.exists():
-        roads_path = PROJECT_ROOT / "data" / "raw" / "karachi_roads.geojson"
+roads = pd.read_sql(query, engine)
 
-    roads = gpd.read_file(roads_path)
+print("\nRoads loaded successfully.\n")
 
-    features = roads[
-        ["osmid", "name", "highway", "length", "lanes", "maxspeed"]
-    ].copy()
+print("Dataset Shape:")
+print(roads.shape)
 
-    features.rename(
-        columns={
-            "osmid": "road_osm_id",
-            "name": "road_name",
-            "highway": "road_type",
-        },
-        inplace=True,
-    )
+print("\nFirst Five Rows:")
+print(roads.head())
 
-    features["road_name"] = features["road_name"].fillna("Unnamed Road")
-    features["length"] = pd.to_numeric(features["length"], errors="coerce")
-    features = features[features["length"] > 0]
+print("\nColumn Names:")
+print(list(roads.columns))
 
-    return features
+print("\nMissing Values:")
+print(roads.isnull().sum())
 
+print("\nRoad Types:")
+print(roads["road_type"].value_counts().head(20))
 
-if __name__ == "__main__":
-    INTERMEDIATE_DIR.mkdir(parents=True, exist_ok=True)
-    roads_df = extract_roads()
-    roads_df.to_csv(ROADS_OUTPUT, index=False)
-    print(f"Saved {len(roads_df)} road records to {ROADS_OUTPUT}")
+print("\nAverage Road Length:")
+print(round(roads["length"].mean(), 2), "meters")
+
+print("\nLongest Road:")
+print(round(roads["length"].max(), 2), "meters")
+
+print("\nSaving extracted dataset...")
+
+roads.to_csv(
+    "ml/datasets/roads_raw.csv",
+    index=False
+)
+
+print("\nRoad dataset saved successfully!")
+
+print("\nSaved to:")
+print("ml/datasets/roads_raw.csv")

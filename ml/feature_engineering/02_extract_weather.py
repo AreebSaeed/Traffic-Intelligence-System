@@ -1,18 +1,74 @@
 import pandas as pd
-from sqlalchemy import create_engine
+from config import engine
 
-from config import DATABASE_URL, INTERMEDIATE_DIR, WEATHER_OUTPUT
+print("=" * 60)
+print("Extracting Weather Data from Supabase...")
+print("=" * 60)
 
+query = """
+SELECT
+    datetime,
+    temperature,
+    humidity,
+    rain,
+    wind_speed,
+    cloud_cover
+FROM weather
+ORDER BY datetime;
+"""
 
-def extract_weather() -> pd.DataFrame:
-    engine = create_engine(DATABASE_URL)
-    weather = pd.read_sql("SELECT * FROM weather ORDER BY datetime", engine)
-    weather["datetime"] = pd.to_datetime(weather["datetime"])
-    return weather
+weather = pd.read_sql(query, engine)
 
+print("\nWeather data loaded successfully.\n")
 
-if __name__ == "__main__":
-    INTERMEDIATE_DIR.mkdir(parents=True, exist_ok=True)
-    weather_df = extract_weather()
-    weather_df.to_csv(WEATHER_OUTPUT, index=False)
-    print(f"Saved {len(weather_df)} weather records to {WEATHER_OUTPUT}")
+print("Dataset Shape:")
+print(weather.shape)
+
+print("\nFirst Five Rows:")
+print(weather.head())
+
+print("\nColumn Names:")
+print(list(weather.columns))
+
+print("\nData Types:")
+print(weather.dtypes)
+
+print("\nMissing Values:")
+print(weather.isnull().sum())
+
+print("\nSummary Statistics:")
+print(weather.describe())
+
+# Convert datetime column
+weather["datetime"] = pd.to_datetime(weather["datetime"])
+
+# Remove duplicate timestamps
+weather = weather.drop_duplicates(subset=["datetime"])
+
+# Sort chronologically
+weather = weather.sort_values("datetime")
+
+print("\nDate Range:")
+print("Start :", weather["datetime"].min())
+print("End   :", weather["datetime"].max())
+
+print("\nAverage Temperature:")
+print(round(weather["temperature"].mean(), 2), "°C")
+
+print("\nMaximum Rainfall:")
+print(round(weather["rain"].max(), 2), "mm")
+
+print("\nMaximum Wind Speed:")
+print(round(weather["wind_speed"].max(), 2), "km/h")
+
+print("\nSaving weather dataset...")
+
+weather.to_csv(
+    "ml/datasets/weather_raw.csv",
+    index=False
+)
+
+print("\nWeather dataset saved successfully!")
+
+print("\nSaved to:")
+print("ml/datasets/weather_raw.csv")
