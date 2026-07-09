@@ -1,4 +1,5 @@
 import pandas as pd
+from config import engine
 
 print("=" * 60)
 print("Merging Holiday Data...")
@@ -9,10 +10,8 @@ base = pd.read_csv(
     parse_dates=["prediction_datetime"]
 )
 
-holidays = pd.read_csv(
-    "ml/datasets/holidays_raw.csv",
-    parse_dates=["holiday_date"]
-)
+holidays = pd.read_sql("SELECT * FROM holidays", engine)
+holidays["holiday_date"] = pd.to_datetime(holidays["holiday_date"])
 
 # Extract date only
 base["date"] = base["prediction_datetime"].dt.date

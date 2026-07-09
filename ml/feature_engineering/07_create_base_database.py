@@ -1,17 +1,16 @@
 import pandas as pd
+from config import engine
 
 print("=" * 60)
 print("Creating Base Dataset...")
 print("=" * 60)
 
-# Load roads
-roads = pd.read_csv("ml/datasets/roads_raw.csv")
+# Load roads from Supabase
+roads = pd.read_sql("SELECT * FROM roads", engine)
 
-# Load weather
-weather = pd.read_csv(
-    "ml/datasets/weather_raw.csv",
-    parse_dates=["datetime"]
-)
+# Load weather from Supabase
+weather = pd.read_sql("SELECT * FROM weather", engine)
+weather["datetime"] = pd.to_datetime(weather["datetime"])
 
 print(f"Roads: {len(roads):,}")
 print(f"Weather Records: {len(weather):,}")
@@ -41,7 +40,7 @@ for _, road in roads.iterrows():
 
         rows.append({
 
-            "road_id": road["road_osm_id"],
+            "road_id": road["road_id"],
 
             "road_name": road["road_name"],
 

@@ -1,4 +1,5 @@
 import pandas as pd
+from config import engine
 
 print("=" * 60)
 print("Merging Office Timings...")
@@ -9,9 +10,7 @@ df = pd.read_csv(
     parse_dates=["prediction_datetime"]
 )
 
-offices = pd.read_csv(
-    "ml/datasets/office_timings_raw.csv"
-)
+offices = pd.read_sql("SELECT * FROM office_timings", engine)
 
 df["office_peak"] = 0
 

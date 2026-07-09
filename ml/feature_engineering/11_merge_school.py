@@ -1,4 +1,5 @@
 import pandas as pd
+from config import engine
 
 print("=" * 60)
 print("Merging School Timings...")
@@ -9,9 +10,7 @@ df = pd.read_csv(
     parse_dates=["prediction_datetime"]
 )
 
-schools = pd.read_csv(
-    "ml/datasets/school_timings_raw.csv"
-)
+schools = pd.read_sql("SELECT * FROM school_timings", engine)
 
 # Initialize
 df["school_peak"] = 0

@@ -1,4 +1,5 @@
 import pandas as pd
+from config import engine
 
 print("=" * 60)
 print("Merging Events...")
@@ -9,10 +10,8 @@ df = pd.read_csv(
     parse_dates=["prediction_datetime"]
 )
 
-events = pd.read_csv(
-    "ml/datasets/events_raw.csv",
-    parse_dates=["event_date"]
-)
+events = pd.read_sql("SELECT * FROM events", engine)
+events["event_date"] = pd.to_datetime(events["event_date"])
 
 # Extract date
 df["date"] = df["prediction_datetime"].dt.date

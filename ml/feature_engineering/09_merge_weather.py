@@ -1,4 +1,5 @@
 import pandas as pd
+from config import engine
 
 print("=" * 60)
 print("Merging Weather Data...")
@@ -9,10 +10,8 @@ base = pd.read_csv(
     parse_dates=["prediction_datetime"]
 )
 
-weather = pd.read_csv(
-    "ml/datasets/weather_raw.csv",
-    parse_dates=["datetime"]
-)
+weather = pd.read_sql("SELECT * FROM weather", engine)
+weather["datetime"] = pd.to_datetime(weather["datetime"])
 
 print("Base:", base.shape)
 print("Weather:", weather.shape)
