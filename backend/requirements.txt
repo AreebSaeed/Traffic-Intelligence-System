@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+apscheduler
+sqlalchemy
+psycopg2-binary
+pandas
+xgboost
+scikit-learn
+joblib
+requests
